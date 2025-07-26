@@ -1,6 +1,8 @@
 AMIGA SPRITE CREATION UTILITY
 code by Jake Aigner July, 2025
 
+```
+
     List of Commands:
             endshell :    quit.
             reset    :    reset sprite
@@ -24,3 +26,4 @@ result:
    	    DC.W $04C8,$03F0
     	    DC.W $0000,$0000    ;end of sprite data
 
+```
