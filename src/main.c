@@ -4,8 +4,11 @@
 #include <stdbool.h>
 
 #define INPUT_MAX 500
+#define MAX_VHEIGHT 256
 
 bool run = true;
+int v_pos = 0;
+char sprite[MAX_VHEIGHT][16];   // amiga sprites have a set width of 16 but infinite height
 
 bool strComp(char *input, char *comp) // compares strings
 {
@@ -39,16 +42,152 @@ void intro() // intro display
 
 void help() // lists commands
 {
-    printf("        List of Commands:\n");
-    printf("            endshell :    quit.\n");
-    printf("            help     :    command list.\n");
+    printf("    List of Commands:\n");
+    printf("        endshell :    quit.\n");
+    printf("        reset    :    reset sprite\n");
+    printf("        gen      :    generate sprite hex data from entered values\n");
+    printf("\n  color data can be entered in one line at a time (width of 16)\n");
+    printf("\n  example:\n");
+    printf("  > reset\n");
+    printf("  > 0000012233221000\n");
+    printf("  > 0001223333332210\n");
+    printf("  > 0000012233221000\n");
+    printf("  > gen\n");
 }
 
+void reset()
+{
+    for (int y = 0; y < 16; y++)
+    {
+        for (int x = 0; x < v_pos; x++)
+        {
+            sprite[x][y] = '0';
+        }
+    }
+    v_pos = 0;
+}
+
+void enter_data(char *line)
+{
+    if (strlen(line) != 16)
+    {
+        printf("E: length must be 16!\n");
+        return;
+    }
+    for (int x = 0; x < 16; x++)
+    {
+        sprite[v_pos][x] = line[x];
+    }
+    if (v_pos < MAX_VHEIGHT)
+    {
+        v_pos++;
+    } else {
+        printf("E: max height!\n");
+    }
+}
+
+void bin2hex(char *b)
+{
+    if (strComp(b, "0000\0"))
+    {
+        printf("0");
+    } else if (strComp(b, "0001\0"))
+    {
+        printf("1");
+    } else if (strComp(b, "0010\0"))
+    {
+        printf("2");
+    } else if (strComp(b, "0011\0"))
+    {
+        printf("3");
+    } else if (strComp(b, "0100\0"))
+    {
+        printf("4");
+    } else if (strComp(b, "0101\0"))
+    {
+        printf("5");
+    } else if (strComp(b, "0110\0"))
+    {
+        printf("6");
+    } else if (strComp(b, "0111\0"))
+    {
+        printf("7");
+    } else if (strComp(b, "1000\0"))
+    {
+        printf("8");
+    } else if (strComp(b, "1001\0"))
+    {
+        printf("9");
+    } else if (strComp(b, "1010\0"))
+    {
+        printf("A");
+    } else if (strComp(b, "1011\0"))
+    {
+        printf("B");
+    } else if (strComp(b, "1100\0"))
+    {
+        printf("C");
+    } else if (strComp(b, "1101\0"))
+    {
+        printf("D");
+    } else if (strComp(b, "1110\0"))
+    {
+        printf("E");
+    } else if (strComp(b, "1111\0"))
+    {
+        printf("F");
+    }
+}
+
+void generate()
+{
+    char h_bits[16], l_bits[16];
+    long int val = 0;
+    for (int v = 0; v < v_pos; v++)
+    {
+        for (int i = 0; i < 16; i++)
+        {
+            switch (sprite[v][i]) {
+                case '0':
+                    h_bits[i] = '0';
+                    l_bits[i] = '0';
+                    break;
+                case '1':
+                    h_bits[i] = '0';
+                    l_bits[i] = '1';
+                    break;
+                case '2':
+                    h_bits[i] = '1';
+                    l_bits[i] = '0';
+                    break;
+                case '3':
+                    h_bits[i] = '1';
+                    l_bits[i] = '1';
+                    break;
+                default:
+                    h_bits[i] = '0';
+                    l_bits[i] = '0';
+                    break;
+            }
+        }
+        printf("\nHigh: ");
+        bin2hex(&h_bits[0]);
+        bin2hex(&h_bits[4]);
+        bin2hex(&h_bits[8]);
+        bin2hex(&h_bits[12]);
+        printf(" Low: ");
+        bin2hex(&l_bits[0]);
+        bin2hex(&l_bits[4]);
+        bin2hex(&l_bits[8]);
+        bin2hex(&l_bits[12]);
+    }
+    printf("\n");
+}
 
 void shell() // handles user input
 {
     char input[INPUT_MAX];
-    printf("? -> ");
+    printf("> ");
     fgets(input, INPUT_MAX, stdin);
     char command[INPUT_MAX];
     char arg[INPUT_MAX];
@@ -70,10 +209,26 @@ void shell() // handles user input
     {
         help();
     }
+    else if (strComp(command, "reset\0"))
+    {
+        reset();
+    }
+    else if (strComp(command, "gen\0"))
+    {
+        generate();
+    }
+    else if (strComp(command, "clear\0"))
+    {
+        system("clear");
+        intro();
+    } else {
+        enter_data(command);
+    }
 }
 
 int main()
 {
+    system("clear");
     intro();
     while (run)
     {
