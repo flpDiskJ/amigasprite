@@ -8,12 +8,14 @@ code by Jake Aigner July, 2025
     color data can be entered in one line at a time (width of 16)
     0 = transparent 
     1-3 = sprite colors (check hardware manual for more info)
-     example:
+example:
         > reset
         > 0000012233221000
         > 0001223333332210
         > 0000012233221000
         > gen
+
+result:
 
 	sprite:
     	    DC.W $XXYY,$ZZ00    ;VSTART (XX),HSTART (YY),VSTOP (ZZ) (VSTOP = VSTART + 3)
