@@ -47,12 +47,13 @@ void help() // lists commands
     printf("        reset    :    reset sprite\n");
     printf("        gen      :    generate sprite hex data from entered values\n");
     printf("\n  color data can be entered in one line at a time (width of 16)\n");
-    printf("\n  example:\n");
-    printf("  > reset\n");
-    printf("  > 0000012233221000\n");
-    printf("  > 0001223333332210\n");
-    printf("  > 0000012233221000\n");
-    printf("  > gen\n");
+    printf("  0 = transparent\n  1-3 = sprite colors (check hardware manual for more info)");
+    printf("\n\n  example:\n");
+    printf("    > reset\n");
+    printf("    > 0000012233221000\n");
+    printf("    > 0001223333332210\n");
+    printf("    > 0000012233221000\n");
+    printf("    > gen\n");
 }
 
 void reset()
@@ -143,6 +144,8 @@ void generate()
 {
     char h_bits[16], l_bits[16];
     long int val = 0;
+    printf("\nsprite:");
+    printf("\n    DC.W $XXYY,$ZZ00    ;VSTART (XX),HSTART (YY),VSTOP (ZZ) (VSTOP = VSTART + %d)", v_pos);
     for (int v = 0; v < v_pos; v++)
     {
         for (int i = 0; i < 16; i++)
@@ -170,18 +173,18 @@ void generate()
                     break;
             }
         }
-        printf("\nHigh: ");
-        bin2hex(&h_bits[0]);
-        bin2hex(&h_bits[4]);
-        bin2hex(&h_bits[8]);
-        bin2hex(&h_bits[12]);
-        printf(" Low: ");
+        printf("\n    DC.W $");
         bin2hex(&l_bits[0]);
         bin2hex(&l_bits[4]);
         bin2hex(&l_bits[8]);
         bin2hex(&l_bits[12]);
+        printf(",$");
+        bin2hex(&h_bits[0]);
+        bin2hex(&h_bits[4]);
+        bin2hex(&h_bits[8]);
+        bin2hex(&h_bits[12]);
     }
-    printf("\n");
+    printf("\n    DC.W $0000,$0000    ;end of sprite data\n\n");
 }
 
 void shell() // handles user input
